@@ -223,10 +223,14 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var cardTop = '<div class="card text-center" style="background-color: inherit">' + html1 + '<div style="padding: 0;" class="card-body"><h5 class="card-title">'
     var cardMid = '</h5>'
     var cardEnd = '</div></div>';
-
+    var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
-        html2 = html2 + "" + orderData[y].name + " Quantity: " + orderData[y].quantity + '<br>'
+   
+ 	if (orderData[y].variantName != null){
+    		variantName = " - "+orderData[y].variantName 
+    	}
+        html2 = html2 + "<strong>" + orderData[y].name +"</strong><i>	 "+variantName  + "</i> Qty: <strong>" + orderData[y].quantity + ' </strong> <br>'
         if (orderData[y].comment != undefined) {
             html2 = html2 + "<strong>Comments:</strong> " + orderData[y].comment;
         }
