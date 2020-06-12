@@ -9,7 +9,7 @@
     <div id="result"></div>
 </div>
 <script>
-var authSettings = {
+    var authSettings = {
     "url": "https://cors-anywhere.herokuapp.com/https://oauth.izettle.com/token",
     "method": "POST",
     "timeout": 0,
@@ -38,7 +38,7 @@ setInterval(function() {
 }, 7100000)
 </script>
 <script>
-var authToken;
+    var authToken;
 
 var e; //element counter
 var html2 = "";
@@ -56,7 +56,6 @@ var settings;
 //begin 5s loop
 
 setInterval(function() {
-    console.log("checking if auth token set")
 
     if (JSON.parse(localStorage.getItem("auth")).access_token == null) {
         setInterval(function() {
@@ -234,24 +233,40 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var html1 = " <h5> Order: " + latestOrderNum % 99 + "</h5>";
     var cardTop = '<div class="card text-center" style="background-color: inherit">' + html1 + '<div style="padding: 0;" class="card-body"><h5 class="card-title">'
     var cardMid = '</h5>'
-    var cardEnd = '</div></div>';
+    var cardEnd = '</div></div> ';
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
 
-        if (orderData[y].variantName != null) {
-            variantName = " - " + orderData[y].variantName
+        if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
+				html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
+
         }
-        html2 = html2 + "<strong>" + orderData[y].name + "</strong><i>	 " + variantName + "</i> Qty: <strong>" + orderData[y].quantity + ' </strong> <br>'
+        else {
+            variantName = "<br>" + orderData[y].variantName+"<br>"
+        html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
+
+        }
+
         if (orderData[y].comment != undefined) {
-            html2 = html2 + "<strong>Comments:</strong> " + orderData[y].comment;
+            html2 = "<p>" + html2 + "Comments:<i> " + orderData[y].comment+"</i><br> </p>";
         }
+
     }
 
     //generate final order card HTML
-    buildHTML = cardTop + cardMid + html2 + cardEnd;
+    buildHTML = cardTop + cardMid + html2  + cardEnd;
     html2 = ""
     return buildHTML;
 }
 var initCounter = 0;
 </script>
+<style type="text/css">
+br {
+    margin: 0;
+}
+
+h5 {
+    margin: 0;
+}
+</style>
