@@ -38,8 +38,7 @@ setInterval(function() {
 }, 7100000)
 </script>
 <script>
-var authToken = JSON.parse(localStorage.getItem("auth")).access_token
-
+var authToken;
 
 var e; //element counter
 var html2 = "";
@@ -49,40 +48,59 @@ var currentClosed = localStorage.getItem("closed") //all closed orders
 localStorage.setItem("closed", currentClosed + ",101"); //init closed order on page load
 var numOfPrevOrders = 10; //number of previous orders to load
 var loading = 1
-getOrders();
-initCreateElements(latestOrder, e);
 
+
+getOrders();
+//initCreateElements(latestOrder, e);
+var settings;
 //begin 5s loop
 
 setInterval(function() {
-    //console.log("Updating Orders")
-    latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //update max order num
-    e = latestOrder; //just cause 
-    getOrders() //ajax request from izettle
-    var loading = document.getElementById("loading");
-    if (loading != null){
-    loading.remove();
-}
-    getLatestOrder(latestOrder, e) //update with new orders
-    loading = loading + 1
-    //console.log(loading)
-    if (loading == 2) {
+    console.log("checking if auth token set")
+
+    if (JSON.parse(localStorage.getItem("auth")).access_token == null) {
+        setInterval(function() {
+            console.log("Repeating auth")
+            var authToken = JSON.parse(localStorage.getItem("auth")).access_token;
+        }, 1000)
+    }
+
+
+    if (JSON.parse(localStorage.getItem("auth")).access_token != null) {
+        authToken = JSON.parse(localStorage.getItem("auth")).access_token;
+        settings = {
+            "url": "https://purchase.izettle.com/purchases/v2?limit=99&descending=true",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "content-type": "application/json",
+                "Authorization": "Bearer " + JSON.parse(localStorage.getItem("auth")).access_token,
+            }
+        }
+        latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //update max order num
+        e = latestOrder; //just cause 
+        getOrders() //ajax request from izettle
+        var loading = document.getElementById("loading");
+        if (loading != null) {
+            loading.remove();
+        }
+        getLatestOrder(latestOrder, e) //update with new orders
+        loading = loading + 1
+        //console.log(loading)
+
+    } else { console.log("waiting") }
+    initCounter = initCounter + 1;
+
+    if (initCounter == 1) {
         initCreateElements(latestOrder, e);
     }
+
 }, 5000)
 
- 
+console.log("HERE")
 
 
-var settings = {
-    "url": "https://purchase.izettle.com/purchases/v2?limit=99&descending=true",
-    "method": "GET",
-    "timeout": 0,
-    "headers": {
-        "content-type": "application/json",
-        "Authorization": "Bearer " + authToken,
-    }
-};
+
 
 function getOrders() {
     $.ajax(settings).done(function(response) {
@@ -126,22 +144,16 @@ function getLatestOrder(latestOrder, e) {
     if (!orderElementExists) {
         e = latestOrder
         console.log(e);
-        //console.log(closedOrders)
         var closedOrders = (localStorage.getItem("closed")).split(",");
-
         if (closedOrders.includes(e.toString()) == false) {
-
             var newE = e;
-
             while ((document.getElementById(newE - 1) == null)) {
                 if (isNaN(newE)) {
                     console.log("Break")
                     break;
                 }
                 newE = newE - 1;
-                //console.log("newE " + newE)
             }
-
             body = document.getElementById(newE - 1);
             a = document.createElement("div");
             a.setAttribute("id", e);
@@ -167,7 +179,7 @@ function initCreateElements(latestOrder, e) {
     console.log("Getting Past Orders ");
 
     //loop through each order
-    for (e = latestOrder; e >= latestOrder - numOfPrevOrders; e--) {
+    for (e = latestOrder - 1; e >= latestOrder - numOfPrevOrders; e--) {
         var closedOrders = localStorage.getItem("closed");
         closedOrders = closedOrders.split(",");
 
@@ -226,11 +238,11 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
-   
- 	if (orderData[y].variantName != null){
-    		variantName = " - "+orderData[y].variantName 
-    	}
-        html2 = html2 + "<strong>" + orderData[y].name +"</strong><i>	 "+variantName  + "</i> Qty: <strong>" + orderData[y].quantity + ' </strong> <br>'
+
+        if (orderData[y].variantName != null) {
+            variantName = " - " + orderData[y].variantName
+        }
+        html2 = html2 + "<strong>" + orderData[y].name + "</strong><i>	 " + variantName + "</i> Qty: <strong>" + orderData[y].quantity + ' </strong> <br>'
         if (orderData[y].comment != undefined) {
             html2 = html2 + "<strong>Comments:</strong> " + orderData[y].comment;
         }
@@ -241,4 +253,5 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     html2 = ""
     return buildHTML;
 }
+var initCounter = 0;
 </script>
