@@ -230,7 +230,7 @@ function remove(el) {
 function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
 
     var itemsInOrder = orderData.length;
-    var html1 = " <h5> Order: " + latestOrderNum % 99 + "</h5>";
+    var html1 = " <h5> Order: " + latestOrderNum % 99+1 + "</h5>";
     var cardTop = '<div class="card text-center" style="background-color: inherit">' + html1 + '<div style="padding: 0;" class="card-body"><h5 class="card-title">'
     var cardMid = '</h5>'
     var cardEnd = '</div></div> ';
