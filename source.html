@@ -141,6 +141,8 @@ function getLatestOrder(latestOrder, e) {
     console.log("Updating with latest orders")
     var orderElementExists = document.getElementById(e);
     if (!orderElementExists) {
+        var audio = new Audio('note.mp3');
+	audio.play();
         e = latestOrder
         console.log(e);
         var closedOrders = (localStorage.getItem("closed")).split(",");
@@ -164,7 +166,7 @@ function getLatestOrder(latestOrder, e) {
             htmldata = localStorage.getItem(e);
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
-
+		
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = (buildHTML);
             html2 = ""
