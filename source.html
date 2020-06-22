@@ -141,12 +141,14 @@ function getLatestOrder(latestOrder, e) {
     console.log("Updating with latest orders")
     var orderElementExists = document.getElementById(e);
     if (!orderElementExists) {
-        var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
-	audio.play();
+
         e = latestOrder
         console.log(e);
         var closedOrders = (localStorage.getItem("closed")).split(",");
         if (closedOrders.includes(e.toString()) == false) {
+        var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
+		audio.play(); 
+		console.log("PLAY")
             var newE = e;
             while ((document.getElementById(newE - 1) == null)) {
                 if (isNaN(newE)) {
