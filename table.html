@@ -168,10 +168,13 @@ function getLatestOrder(latestOrder, e) {
             htmldata = localStorage.getItem(e);
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
-		
+    		for (var y = 0; y < itemsInOrder; y++) {
+		if ((orderData[y].name).substring(0, 5) == "Table") {
+			console.log((orderData[y].name).substring(0, 5));
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = (buildHTML);
             html2 = ""
+		}
         } else { console.log(e + " ERROR: new order is already closed") }
     }
 }
@@ -241,7 +244,6 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
-	if ((orderData[y].name).substring(0, 5) == "Table") {
         if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
 				html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
 
@@ -261,7 +263,6 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     //generate final order card HTML
     buildHTML = cardTop + cardMid + html2  + cardEnd;
     html2 = ""
-    }
     return buildHTML;
 }
 	
