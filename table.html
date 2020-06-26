@@ -241,7 +241,7 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
-	if ((orderData[y].name).substring(0, 5) = "Table") {
+	if ((orderData[y].name).substring(0, 5) == "Table") {
         if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
 				html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
 
