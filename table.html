@@ -147,8 +147,8 @@ function getLatestOrder(latestOrder, e) {
         var closedOrders = (localStorage.getItem("closed")).split(",");
         if (closedOrders.includes(e.toString()) == false) {
         var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
-		audio.play(); 
-		console.log("PLAY")
+        audio.play(); 
+        console.log("PLAY")
             var newE = e;
             while ((document.getElementById(newE - 1) == null)) {
                 if (isNaN(newE)) {
@@ -168,14 +168,17 @@ function getLatestOrder(latestOrder, e) {
             htmldata = localStorage.getItem(e);
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
-    		for (var y = 0; y < itemsInOrder; y++) {
-		if ((orderData[y].name).substring(0, 5) == "Table") {
-			console.log((orderData[y].name).substring(0, 5));
+        
+        var orderData = htmldata;
+        for (var y = 0; y < itemsInOrder; y++) {
+        if ((orderData[y].name).substring(0, 5) == "Table") {
+            console.log((orderData[y].name).substring(0, 5));
+
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = (buildHTML);
             html2 = ""
-		}
-        }
+        } else {console.log("Order "+((e%99)+1)+ " is not a table service order")}} 
+        } else { console.log(e + " ERROR: new order is already closed") }
     }
 }
 
@@ -187,7 +190,13 @@ function initCreateElements(latestOrder, e) {
     //loop through each order
     for (e = latestOrder - 1; e >= latestOrder - numOfPrevOrders; e--) {
         var closedOrders = localStorage.getItem("closed");
+            htmldata = localStorage.getItem(e);
+            htmldata = JSON.parse(htmldata);
+            itemsInOrder = htmldata.length;
+            var orderData = htmldata;
         closedOrders = closedOrders.split(",");
+        for (var y = 0; y < itemsInOrder; y++) {
+        if ((orderData[y].name).substring(0, 5) == "Table") {
 
         //if e in closed order list then do nothing, else display:
         if (closedOrders.includes(e.toString()) == false) {
@@ -198,15 +207,14 @@ function initCreateElements(latestOrder, e) {
 
             a.setAttribute("onclick", 'highlight(this);')
             body.insertAdjacentElement("beforebegin", a);
-            htmldata = localStorage.getItem(e);
-            htmldata = JSON.parse(htmldata);
-            itemsInOrder = htmldata.length;
-
+        
+            console.log((orderData[y].name).substring(0, 5));
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = buildHTML;
 
-        } else {
-            console.log(e + ": Order is closed") //if order closed ==true
+        }   
+        } 
+        
         }
     }
 
@@ -244,8 +252,9 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
+
         if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
-				html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
+                html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
 
         }
         else {
@@ -265,8 +274,6 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     html2 = ""
     return buildHTML;
 }
-	
-
 var initCounter = 0;
 </script>
 <style type="text/css">
