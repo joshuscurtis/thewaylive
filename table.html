@@ -1,7 +1,12 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,
+initial-scale=1">
 <div style="width: 80%; margin-left: 10%;">
+    <a style="float:right; margin-top: 5px;" href="https://joshuscurtis.github.io/theway/index.html" onclick="console.log('click')" class="btn btn-primary btn-md active" role="button" aria-pressed="true">
+        Switch to Takeaway Orders
+    </a>
+    <h2>The Way - Table Orders</h2>
     <div id="4000"></div>
     <div id="loading">
         <h3>Please wait while the page loads...</h3>
@@ -146,6 +151,12 @@ function getLatestOrder(latestOrder, e) {
         console.log(e);
         var closedOrders = (localStorage.getItem("closed")).split(",");
         if (closedOrders.includes(e.toString()) == false) {
+        var orderData = htmldata;
+            htmldata = localStorage.getItem(e);
+            htmldata = JSON.parse(htmldata);
+            itemsInOrder = htmldata.length;
+        for (var y = 0; y < itemsInOrder; y++) {
+        if (isTable(orderData,y)) {
         var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
         audio.play(); 
         console.log("PLAY")
@@ -160,28 +171,18 @@ function getLatestOrder(latestOrder, e) {
             body = document.getElementById(newE - 1);
             a = document.createElement("div");
             a.setAttribute("id", e);
-            a.setAttribute("class", "card")
-            a.setAttribute("style", 'background-color: green;') //new orders are highlighted green
-            a.setAttribute("onclick", 'highlight(this);')
+            a.setAttribute("class", "card");
+            a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
+            a.setAttribute("onclick", 'highlight(this);');
             body.insertAdjacentElement("beforebegin", a);
-
-            htmldata = localStorage.getItem(e);
-            htmldata = JSON.parse(htmldata);
-            itemsInOrder = htmldata.length;
-        
-        var orderData = htmldata;
-        for (var y = 0; y < itemsInOrder; y++) {
-        if ((orderData[y].name).substring(0, 5) == "Table") {
             console.log((orderData[y].name).substring(0, 5));
-
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = (buildHTML);
-            html2 = ""
+            html2 = "";
         } else {console.log("Order "+((e%99)+1)+ " is not a table service order")}} 
-        } else { console.log(e + " ERROR: new order is already closed") }
+        } else { console.log(e + " ERROR: latest order is already closed") }
     }
 }
-
 
 
 function initCreateElements(latestOrder, e) {
@@ -196,7 +197,7 @@ function initCreateElements(latestOrder, e) {
             var orderData = htmldata;
         closedOrders = closedOrders.split(",");
         for (var y = 0; y < itemsInOrder; y++) {
-        if ((orderData[y].name).substring(0, 5) == "Table") {
+        if (isTable(orderData,y)) {
 
         //if e in closed order list then do nothing, else display:
         if (closedOrders.includes(e.toString()) == false) {
@@ -207,8 +208,6 @@ function initCreateElements(latestOrder, e) {
 
             a.setAttribute("onclick", 'highlight(this);')
             body.insertAdjacentElement("beforebegin", a);
-        
-            console.log((orderData[y].name).substring(0, 5));
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = buildHTML;
 
@@ -274,6 +273,24 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     html2 = ""
     return buildHTML;
 }
+function isTable(orderData, y) {
+    var orderName = orderData[y].name.substring(0,5)
+    if (orderName == "Table") {
+    return true;
+     }
+    else {
+        return false  }
+}
+
+function isNotTable(orderData, y) {
+    var orderName = orderData[y].name.substring(0,5)
+    if (orderName == "Table") {
+    return false;
+     }
+    else {
+        return true  }
+}
+
 var initCounter = 0;
 </script>
 <style type="text/css">
