@@ -155,7 +155,7 @@ function getLatestOrder(latestOrder, e) {
             htmldata = localStorage.getItem(e);
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
-        if (doesOrderContainTable(orderData) == false) {
+        if (doesOrderContainTable(htmldata) == false) {
 
         var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
         audio.play(); 
@@ -195,7 +195,7 @@ function initCreateElements(latestOrder, e) {
             itemsInOrder = htmldata.length;
             var orderData = htmldata;
         closedOrders = closedOrders.split(",");
-        if (doesOrderContainTable(orderData) == false) {
+        if (doesOrderContainTable(htmldata) == false) {
 
         //if e in closed order list then do nothing, else display:
         if (closedOrders.includes(e.toString()) == false) {
