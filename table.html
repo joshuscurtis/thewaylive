@@ -151,6 +151,7 @@ function getOrders() {
 
 
 function getLatestOrder(latestOrder, e) {
+
     console.log("Updating with latest orders")
     var orderElementExists = document.getElementById(e);
     if (!orderElementExists) {
@@ -163,8 +164,8 @@ function getLatestOrder(latestOrder, e) {
             htmldata = localStorage.getItem(e);
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
-        for (var y = 0; y < itemsInOrder; y++) {
-        if (isTable(orderData,y)) {
+        if (doesOrderContainTable(orderData) == true) {
+
         var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
         audio.play(); 
         console.log("PLAY")
@@ -183,11 +184,10 @@ function getLatestOrder(latestOrder, e) {
             a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
             a.setAttribute("onclick", 'highlight(this);');
             body.insertAdjacentElement("beforebegin", a);
-            console.log((orderData[y].name).substring(0, 5));
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = (buildHTML);
             html2 = "";
-        } else {console.log("Order "+((e%99)+1)+ " is not a table service order")}} 
+        } else {console.log("Order "+((e%99)+1)+ " is not a table service order")}
         } else { console.log(e + " ERROR: latest order is already closed") }
     }
 }
@@ -204,8 +204,7 @@ function initCreateElements(latestOrder, e) {
             itemsInOrder = htmldata.length;
             var orderData = htmldata;
         closedOrders = closedOrders.split(",");
-        for (var y = 0; y < itemsInOrder; y++) {
-        if (isTable(orderData,y)) {
+        if (doesOrderContainTable(orderData) == true) {
 
         //if e in closed order list then do nothing, else display:
         if (closedOrders.includes(e.toString()) == false) {
@@ -219,7 +218,7 @@ function initCreateElements(latestOrder, e) {
             buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
             document.getElementById(e).innerHTML = buildHTML;
 
-        }   
+         
         } 
         
         }
@@ -281,27 +280,21 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     html2 = ""
     return buildHTML;
 }
-function isTable(orderData, y) {
-    var orderName = orderData[y].name.substring(0,5)
-    if (orderName == "Table") {
-    return true;
-     }
-    else {
-        return false  }
-}
 
-function isNotTable(orderData, y) {
-    var orderName = orderData[y].name.substring(0,5)
-    if (orderName == "Table") {
-    return false;
-     }
-    else {
-        return true  }
+
+function doesOrderContainTable(orderData) {
+    var itemsInOrder = orderData.length;
+    var tableOrder;
+    for (var y = 0; y < itemsInOrder; y++) {
+        var orderName = orderData[y].name.substring(0,5)
+        if(orderName == "Table") {tableOrder = true} 
+        else {tableOrder = false}
+}
+return tableOrder;
 }
 
 var initCounter = 0;
 </script>
-
 <style type="text/css">
 br {
     margin: 0;
