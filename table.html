@@ -1,24 +1,16 @@
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> <link
-rel="stylesheet"
-href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-crossorigin="anonymous"> <meta name="viewport" content="width=device-width,
-initial-scale=1"> 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width,
+initial-scale=1">
 <div style="width: 80%; margin-left: 10%;">
-    <a style="float:right; margin-top: 5px;"
-       href="takeaway.html" 
-       onclick="console.log('click')" 
-       class="btn btn-primary btn-md active" 
-       role="button" 
-       aria-pressed="true">
-   Switch to Takeaway Orders
-</a> 
-   <h3>The Way - Table Orders</h3>
-<div id="loading"> 
+    <a style="float:right; margin-top: 5px;" href="takeaway.html" onclick="console.log('click')" class="btn btn-primary btn-md active" role="button" aria-pressed="true">
+        Switch to Takeaway Orders
+    </a>
+    <h3>The Way - Table Orders</h3>
+    <div id="loading">
         <h4 class="text-center"><i>Please wait while the page loads...</i></h4>
-</div>
-<div id="4000"></div>
-
+    </div>
+    <div id="4000"></div>
     <div id="result"></div>
 </div>
 <script>
@@ -61,6 +53,7 @@ var currentClosed = localStorage.getItem("closed") //all closed orders
 localStorage.setItem("closed", currentClosed + ",101"); //init closed order on page load
 var numOfPrevOrders = 10; //number of previous orders to load
 var loading = 1
+var table;
 
 
 getOrders();
@@ -251,28 +244,35 @@ function remove(el) {
 function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
 
     var itemsInOrder = orderData.length;
-    var html1 = " <h5> Order: " + (latestOrderNum % 99+1) + "</h5>";
+
+
+    var html1 = " <h5> "+table+" (Order: " + (latestOrderNum % 99+1) + ")</h5>";
+
+
+
+
     var cardTop = '<div class="card text-center" style="background-color: inherit">' + html1 + '<div style="padding: 0;" class="card-body"><h5 class="card-title">'
     var cardMid = '</h5>'
     var cardEnd = '</div></div> ';
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
+        if ((orderData[y].name).substring(0,5) != "Table") {
+            if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
+                    html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
 
-        if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
-                html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
+            }
+            else {
+                variantName = "<br>" + orderData[y].variantName+"<br>"
+            html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
 
+            }
+
+            if (orderData[y].comment != undefined) {
+                html2 = "<p>" + html2 + "Comments:<i> " + orderData[y].comment+"</i><br> </p>";
+            }
         }
-        else {
-            variantName = "<br>" + orderData[y].variantName+"<br>"
-        html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
-
-        }
-
-        if (orderData[y].comment != undefined) {
-            html2 = "<p>" + html2 + "Comments:<i> " + orderData[y].comment+"</i><br> </p>";
-        }
-
+        else {console.log("Item is a table")}
     }
 
     //generate final order card HTML
@@ -287,7 +287,11 @@ function doesOrderContainTable(orderData) {
     var tableOrder;
     for (var y = 0; y < itemsInOrder; y++) {
         var orderName = orderData[y].name.substring(0,5)
-        if(orderName == "Table") {tableOrder = true} 
+        if(orderName == "Table") {
+            tableOrder = true;
+            table =  orderData[y].name;
+            console.log(table);
+        } 
         else {tableOrder = false}
 }
 return tableOrder;
