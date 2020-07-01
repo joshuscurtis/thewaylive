@@ -69,7 +69,7 @@ setInterval(function() {
     if (JSON.parse(localStorage.getItem("auth")).access_token != null) {
         authToken = JSON.parse(localStorage.getItem("auth")).access_token;
         settings = {
-            "url": "https://purchase.izettle.com/purchases/v2?limit=99&descending=true",
+            "url": "https://purchase.izettle.com/purchases/v2?limit=20&descending=true",
             "method": "GET",
             "timeout": 0,
             "headers": {
