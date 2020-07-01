@@ -98,31 +98,34 @@ setInterval(function() {
 function getOrders() {
     $.ajax(settings).done(function(response) {
         console.log("getOrders");
-
+        //init
         localStorage.setItem('izettle', JSON.stringify(response));
         var order = JSON.parse((localStorage.getItem('izettle')));
         var i;
         var j;
         var orderJSON = new Object();
         var maxOrderNum = 0;
-
         for (i = 0; i < order.purchases.length; i++) {
-            orderJSON["orderNum"] = ((order.purchases[i].purchaseNumber));
-            if (order.purchases[i].purchaseNumber > maxOrderNum) {
-                maxOrderNum = (order.purchases[i].purchaseNumber);
-            }
+        if (doesOrderContainTable(order.purchases[i].products) ==false) {
 
-            orderJSON["orderProducts"];
+                orderJSON["orderNum"] = ((order.purchases[i].purchaseNumber));
+                if (order.purchases[i].purchaseNumber > maxOrderNum) {
+                    maxOrderNum = (order.purchases[i].purchaseNumber);
+                }
 
-            for (j = 0; j < (order.purchases[i].products).length; j++) {
-                var productsInOrder = order.purchases[i].products
-                var completeData = Object.assign(productsInOrder, orderJSON);
-            }
+                orderJSON["orderProducts"];
+                for (j = 0; j < (order.purchases[i].products).length; j++) {
+                    var productsInOrder = order.purchases[i].products
+                    var completeData = Object.assign(productsInOrder, orderJSON);
+                }
+                // console.log(completeData);
+                localStorage.setItem(completeData.orderNum, JSON.stringify(completeData));
+                localStorage.setItem("maxOrderNum", maxOrderNum);
+                //console.log(orderJSON);
+            
+        } 
+    }});
 
-            localStorage.setItem(completeData.orderNum, JSON.stringify(completeData));
-            localStorage.setItem("maxOrderNum", maxOrderNum);
-        }
-    });
 }
 
 function getLatestOrder(latestOrder, e) {
