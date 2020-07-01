@@ -63,7 +63,7 @@ setInterval(function() {
         setInterval(function() {
             console.log("Repeating auth")
             var authToken = JSON.parse(localStorage.getItem("auth")).access_token;
-        }, 1000)
+        }, 100)
     }
 
     if (JSON.parse(localStorage.getItem("auth")).access_token != null) {
@@ -93,7 +93,7 @@ setInterval(function() {
     if (initCounter == 1) {
         initCreateElements(latestOrder, e);
     }
-}, 5000)
+}, 1000)
 
 function getOrders() {
     $.ajax(settings).done(function(response) {
