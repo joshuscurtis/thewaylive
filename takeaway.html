@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,
 initial-scale=1">
 <div style="width: 80%; margin-left: 10%;">
-    <a style="float:right; margin-top: 5px;" href="table.html" onclick="confirm('Are you sure you want to switch? (You might loose orders which have not been fully processed yet.)')" class="btn btn-success btn-md active" role="button" aria-pressed="true"> 
+    <a style="float:right; margin-top: 5px;" onclick="window.open('table.html', 'table.html'); return false;" class="btn btn-success btn-md active" role="button" aria-pressed="true">
         Switch to Table Orders
     </a>
     <h3>Takeaway Orders</h3><br>
@@ -14,7 +14,6 @@ initial-scale=1">
     <div id="result"></div>
 </div>
 <script>
-
     document.body.style.zoom = 1.5
     var authSettings = {
     "url": "https://cors-anywhere.herokuapp.com/https://oauth.izettle.com/token",
@@ -46,31 +45,26 @@ setInterval(function() {
 </script>
 <script>
     var authToken;
-
 var e; //element counter
 var html2 = "";
 var htmldata;
 var latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //set init max order num
 var currentClosed = localStorage.getItem("closed") //all closed orders
 localStorage.setItem("closed", currentClosed + ",101"); //init closed order on page load
-var numOfPrevOrders = 10; //number of previous orders to load
+var numOfPrevOrders = 4; //number of previous orders to load
 var loading = 1
 
-
 getOrders();
-//initCreateElements(latestOrder, e);
 var settings;
+
 //begin 5s loop
-
 setInterval(function() {
-
     if (JSON.parse(localStorage.getItem("auth")).access_token == null) {
         setInterval(function() {
             console.log("Repeating auth")
             var authToken = JSON.parse(localStorage.getItem("auth")).access_token;
         }, 1000)
     }
-
 
     if (JSON.parse(localStorage.getItem("auth")).access_token != null) {
         authToken = JSON.parse(localStorage.getItem("auth")).access_token;
@@ -83,6 +77,7 @@ setInterval(function() {
                 "Authorization": "Bearer " + JSON.parse(localStorage.getItem("auth")).access_token,
             }
         }
+
         latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //update max order num
         e = latestOrder; //just cause 
         getOrders() //ajax request from izettle
@@ -92,26 +87,18 @@ setInterval(function() {
         }
         getLatestOrder(latestOrder, e) //update with new orders
         loading = loading + 1
-        //console.log(loading)
+    } else { console.log("waiting")}
 
-    } else { console.log("waiting") }
     initCounter = initCounter + 1;
-
     if (initCounter == 1) {
         initCreateElements(latestOrder, e);
     }
-
 }, 5000)
-
-console.log("HERE")
-
-
-
 
 function getOrders() {
     $.ajax(settings).done(function(response) {
         console.log("getOrders");
-        //init
+
         localStorage.setItem('izettle', JSON.stringify(response));
         var order = JSON.parse((localStorage.getItem('izettle')));
         var i;
@@ -120,68 +107,62 @@ function getOrders() {
         var maxOrderNum = 0;
 
         for (i = 0; i < order.purchases.length; i++) {
-            //console.log('orderNum: ' + (order.purchases[i].purchaseNumber) % 99)
             orderJSON["orderNum"] = ((order.purchases[i].purchaseNumber));
             if (order.purchases[i].purchaseNumber > maxOrderNum) {
                 maxOrderNum = (order.purchases[i].purchaseNumber);
             }
-            //console.log("POnum: "+order.purchases[i].purchaseNumber );
-            //console.log('MAX: '+ maxOrderNum);
+
             orderJSON["orderProducts"];
 
             for (j = 0; j < (order.purchases[i].products).length; j++) {
                 var productsInOrder = order.purchases[i].products
-                //console.log(productsInOrder)
                 var completeData = Object.assign(productsInOrder, orderJSON);
             }
-            // console.log(completeData);
+
             localStorage.setItem(completeData.orderNum, JSON.stringify(completeData));
             localStorage.setItem("maxOrderNum", maxOrderNum);
-            //console.log(orderJSON);
         }
     });
-
 }
 
 function getLatestOrder(latestOrder, e) {
+    console.log("Updating with latest orders");
 
-    console.log("Updating with latest orders")
     var orderElementExists = document.getElementById(e);
     if (!orderElementExists) {
-
         e = latestOrder
         console.log(e);
         var closedOrders = (localStorage.getItem("closed")).split(",");
-        if (closedOrders.includes(e.toString()) == false) {
-        var orderData = htmldata;
-            htmldata = localStorage.getItem(e);
-            htmldata = JSON.parse(htmldata);
-            itemsInOrder = htmldata.length;
-        if (doesOrderContainTable(htmldata) == false) {
 
-        var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
-        audio.play(); 
-        console.log("PLAY")
-            var newE = e;
-            while ((document.getElementById(newE - 1) == null)) {
-                if (isNaN(newE)) {
-                    console.log("Break")
-                    break;
+        if (closedOrders.includes(e.toString()) == false) {
+            var orderData = htmldata;
+                htmldata = localStorage.getItem(e);
+                htmldata = JSON.parse(htmldata);
+                itemsInOrder = htmldata.length;
+            if (doesOrderContainTable(htmldata) == false) {
+                var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
+                audio.play(); 
+                var newE = e;
+                while ((document.getElementById(newE - 1) == null)) {
+                    if (isNaN(newE)) {
+                        console.log("Break")
+                        break;
+                    }
+                    newE = newE - 1;
                 }
-                newE = newE - 1;
-            }
-            body = document.getElementById(newE - 1);
-            a = document.createElement("div");
-            a.setAttribute("id", e);
-            a.setAttribute("class", "card");
-            a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
-            a.setAttribute("onclick", 'highlight(this);');
-            body.insertAdjacentElement("beforebegin", a);
-            buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
-            document.getElementById(e).innerHTML = (buildHTML);
-            html2 = "";
-        } else {console.log("Order "+((e%99)+1)+ " is not a table service order")}
-        } else { console.log(e + " ERROR: latest order is already closed") }
+                body = document.getElementById(newE - 1);
+                a = document.createElement("div");
+                a.setAttribute("id", e);
+                a.setAttribute("class", "card");
+                a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
+                a.setAttribute("onclick", 'highlight(this);');
+                body.insertAdjacentElement("beforebegin", a);
+                buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
+                document.getElementById(e).innerHTML = (buildHTML);
+                html2 = "";
+
+            } else {console.log("Order "+((e%99)+1)+ " is a table service order")}
+        } else { console.log(e + " ERROR: latest order is already closed")}
     }
 }
 
@@ -198,25 +179,20 @@ function initCreateElements(latestOrder, e) {
             var orderData = htmldata;
         closedOrders = closedOrders.split(",");
         if (doesOrderContainTable(htmldata) == false) {
+            //if e in closed order list then do nothing, else display:
+            if (closedOrders.includes(e.toString()) == false) {
+                body = document.getElementById("result");
+                a = document.createElement("div");
+                a.setAttribute("id", e);
+                a.setAttribute("class", "card")
 
-        //if e in closed order list then do nothing, else display:
-        if (closedOrders.includes(e.toString()) == false) {
-            body = document.getElementById("result");
-            a = document.createElement("div");
-            a.setAttribute("id", e);
-            a.setAttribute("class", "card")
-
-            a.setAttribute("onclick", 'highlight(this);')
-            body.insertAdjacentElement("beforebegin", a);
-            buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
-            document.getElementById(e).innerHTML = buildHTML;
-
-         
-        } 
-        
+                a.setAttribute("onclick", 'highlight(this);')
+                body.insertAdjacentElement("beforebegin", a);
+                buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
+                document.getElementById(e).innerHTML = buildHTML;         
+            }
         }
     }
-
 }
 
 
@@ -235,14 +211,11 @@ function remove(el) {
         localStorage.removeItem(id);
         localStorage.setItem("closed", id + "," + localStorage.getItem("closed"));
         element.remove();
-    } else {
-
     }
 }
 
 
 function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
-
     var itemsInOrder = orderData.length;
     var html1 = " <h5> Order: " + (latestOrderNum % 99+1) + "</h5>";
     var cardTop = '<div class="card text-center" style="background-color: inherit">' + html1 + '<div style="padding: 0;" class="card-body"><h5 class="card-title">'
@@ -251,43 +224,59 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
     var variantName = ""
     //loop through each item in a order
     for (var y = 0; y < itemsInOrder; y++) {
-
         if (orderData[y].variantName == null || orderData[y].variantName == "" ) {
-                html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
-
+            html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong> <br> Qty: <i><strong>" + orderData[y].quantity + '</strong> </i> <br>'
         }
         else {
             variantName = "<br>" + orderData[y].variantName+"<br>"
-        html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
-
+            html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i><strong>" + orderData[y].quantity + '</strong> </i> <br>'
         }
-
         if (orderData[y].comment != undefined) {
             html2 = "<p>" + html2 + "Comments:<i> " + orderData[y].comment+"</i><br> </p>";
         }
-
     }
-
     //generate final order card HTML
     buildHTML = cardTop + cardMid + html2  + cardEnd;
     html2 = ""
+
     return buildHTML;
 }
 
-
 function doesOrderContainTable(orderData) {
     var itemsInOrder = orderData.length;
+    var count = -1;
+    var tableCheck = null;
     var tableOrder;
     for (var y = 0; y < itemsInOrder; y++) {
         var orderName = orderData[y].name.substring(0,5)
-        if(orderName == "Table") {tableOrder = true} 
-        else {tableOrder = false}
-}
+        if(orderName == "Table") {
+            tableOrder = true;
+            tableCheck = orderData[y].name;
+            table = orderData[y].name;
+            count = count + 1
+        }
+    }
+    if(tableCheck == null) {tableOrder = false}
 return tableOrder;
+}
+
+function filterForToday(response) {
+    var filteredResponse;
+    var todaysDate = new Date();
+    var numOfPurchases = (response.purchases).length;
+
+    for (var y = 0; y < numOfPurchases; y++) {
+        var thisDate = Date.parse(response.purchases[y].created);
+        if (todaysDate > thisDate) {
+            delete response.purchases[y]
+        }
+    return response;
+    }
 }
 
 var initCounter = 0;
 </script>
+
 <style type="text/css">
 br {
     margin: 0;

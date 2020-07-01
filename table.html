@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,
 initial-scale=1">
 <div style="width: 80%; margin-left: 10%;">
-    <a style="float:right; margin-top: 5px;" href="takeaway.html" onclick="confirm('Are you sure you want to switch? (You might loose orders which have not been fully processed yet.)')" class="btn btn-primary btn-md active" role="button" aria-pressed="true">
+    <a type="button" style="float:right; margin-top: 5px;" onclick="window.open('takeaway.html', 'takeaway.html'); return false;" class="btn btn-success btn-md active" role="button" aria-pressed="true">
         Switch to Takeaway Orders
     </a>
     <h3>Table Orders</h3> <br>
@@ -49,10 +49,10 @@ setInterval(function() {
 var e; //element counter
 var html2 = "";
 var htmldata;
-var latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //set init max order num
+var latestOrder = parseInt(localStorage.getItem("maxOrderNumTable")); //set init max order num
 var currentClosed = localStorage.getItem("closed") //all closed orders
 localStorage.setItem("closed", currentClosed + ",101"); //init closed order on page load
-var numOfPrevOrders = 10; //number of previous orders to load
+var numOfPrevOrders = 4; //number of previous orders to load
 var loading = 1
 var table;
 
@@ -83,7 +83,7 @@ setInterval(function() {
                 "Authorization": "Bearer " + JSON.parse(localStorage.getItem("auth")).access_token,
             }
         }
-        latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //update max order num
+        latestOrder = parseInt(localStorage.getItem("maxOrderNumTable")); //update max order num
         e = latestOrder; //just cause 
         getOrders() //ajax request from izettle
         var loading = document.getElementById("loading");
@@ -117,29 +117,27 @@ function getOrders() {
         var i;
         var j;
         var orderJSON = new Object();
-        var maxOrderNum = 0;
-
+        var maxOrderNumTable = 0;
         for (i = 0; i < order.purchases.length; i++) {
-            //console.log('orderNum: ' + (order.purchases[i].purchaseNumber) % 99)
-            orderJSON["orderNum"] = ((order.purchases[i].purchaseNumber));
-            if (order.purchases[i].purchaseNumber > maxOrderNum) {
-                maxOrderNum = (order.purchases[i].purchaseNumber);
-            }
-            //console.log("POnum: "+order.purchases[i].purchaseNumber );
-            //console.log('MAX: '+ maxOrderNum);
-            orderJSON["orderProducts"];
+        if (doesOrderContainTable(order.purchases[i].products)) {
 
-            for (j = 0; j < (order.purchases[i].products).length; j++) {
-                var productsInOrder = order.purchases[i].products
-                //console.log(productsInOrder)
-                var completeData = Object.assign(productsInOrder, orderJSON);
-            }
-            // console.log(completeData);
-            localStorage.setItem(completeData.orderNum, JSON.stringify(completeData));
-            localStorage.setItem("maxOrderNum", maxOrderNum);
-            //console.log(orderJSON);
-        }
-    });
+                orderJSON["orderNum"] = ((order.purchases[i].purchaseNumber));
+                if (order.purchases[i].purchaseNumber > maxOrderNumTable) {
+                    maxOrderNumTable = (order.purchases[i].purchaseNumber);
+                }
+
+                orderJSON["orderProducts"];
+                for (j = 0; j < (order.purchases[i].products).length; j++) {
+                    var productsInOrder = order.purchases[i].products
+                    var completeData = Object.assign(productsInOrder, orderJSON);
+                }
+                // console.log(completeData);
+                localStorage.setItem(completeData.orderNum, JSON.stringify(completeData));
+                localStorage.setItem("maxOrderNumTable", maxOrderNumTable);
+                //console.log(orderJSON);
+            
+        } 
+    }});
 
 }
 
@@ -265,7 +263,7 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
             }
             else {
                 variantName = "<br>" + orderData[y].variantName+"<br>"
-            html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i>" + orderData[y].quantity + ' </i> <br>'
+            html2 = "<p>"+html2 +"<p>"+ "<strong>" + orderData[y].name + "</strong><i>" + variantName + "</i> Qty: <i><strong>" + orderData[y].quantity + '</strong> </i> <br>'
 
             }
 
@@ -285,16 +283,19 @@ function buildOrderHTML(latestOrderNum, orderData, itemsInOrder) {
 
 function doesOrderContainTable(orderData) {
     var itemsInOrder = orderData.length;
+    var count = -1;
+    var tableCheck = null;
     var tableOrder;
     for (var y = 0; y < itemsInOrder; y++) {
         var orderName = orderData[y].name.substring(0,5)
         if(orderName == "Table") {
             tableOrder = true;
-            table =  orderData[y].name;
-            console.log(table);
-        } 
-        else {tableOrder = false}
-}
+            tableCheck = orderData[y].name;
+            table = orderData[y].name;
+            count = count + 1
+        }
+    }
+    if(tableCheck == null) {tableOrder = false}
 return tableOrder;
 }
 
