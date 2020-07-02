@@ -52,7 +52,7 @@ var htmldata;
 var latestOrder = parseInt(localStorage.getItem("maxOrderNumTable")); //set init max order num
 var currentClosed = localStorage.getItem("closed") //all closed orders
 localStorage.setItem("closed", currentClosed + ",101"); //init closed order on page load
-var numOfPrevOrders = 4; //number of previous orders to load
+var numOfPrevOrders = 15; //number of previous orders to load
 var loading = 1
 var table;
 
@@ -75,7 +75,7 @@ setInterval(function() {
     if (JSON.parse(localStorage.getItem("auth")).access_token != null) {
         authToken = JSON.parse(localStorage.getItem("auth")).access_token;
         settings = {
-            "url": "https://purchase.izettle.com/purchases/v2?limit=20&descending=true",
+            "url": "https://purchase.izettle.com/purchases/v2?limit=99&descending=true",
             "method": "GET",
             "timeout": 0,
             "headers": {
@@ -157,6 +157,7 @@ function getLatestOrder(latestOrder, e) {
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
         if (doesOrderContainTable(htmldata) == true) {
+            localStorage.setItem("newOrderTable", latestOrder + "," + localStorage.getItem("newOrderTable"));
 
         var audio = new Audio('https://github.com/joshuscurtis/theway/raw/master/piece-of-cake.mp3');
         audio.play(); 
@@ -185,37 +186,42 @@ function getLatestOrder(latestOrder, e) {
 }
 
 
+var currentNew = localStorage.getItem("newOrderTable") //all closed orders
+localStorage.setItem("newOrderTable", currentNew + ",101"); //init closed order on page load
+
 function initCreateElements(latestOrder, e) {
     console.log("Getting Past Orders ");
 
     //loop through each order
     for (e = latestOrder - 1; e >= latestOrder - numOfPrevOrders; e--) {
         var closedOrders = localStorage.getItem("closed");
+        var newOrderTable = localStorage.getItem("newOrderTable");
             htmldata = localStorage.getItem(e);
             htmldata = JSON.parse(htmldata);
             itemsInOrder = htmldata.length;
             var orderData = htmldata;
         closedOrders = closedOrders.split(",");
+        newOrderTable = newOrderTable.split(",");
+        console.log("NEW: "+newOrderTable);
         if (doesOrderContainTable(htmldata) == true) {
+            //if e in closed order list then do nothing, else display:
+            if (closedOrders.includes(e.toString()) == false || newOrderTable.includes(e.toString()) == true) {
+                body = document.getElementById("result");
+                a = document.createElement("div");
+                a.setAttribute("id", e);
+                a.setAttribute("class", "card")
 
-        //if e in closed order list then do nothing, else display:
-        if (closedOrders.includes(e.toString()) == false) {
-            body = document.getElementById("result");
-            a = document.createElement("div");
-            a.setAttribute("id", e);
-            a.setAttribute("class", "card")
-
-            a.setAttribute("onclick", 'highlight(this);')
-            body.insertAdjacentElement("beforebegin", a);
-            buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
-            document.getElementById(e).innerHTML = buildHTML;
-
-         
-        } 
-        
+                a.setAttribute("onclick", 'highlight(this);')
+                if (newOrderTable.includes(e.toString()) == true) {
+                    a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
+                    console.log("GREEN " + e);
+                }
+                body.insertAdjacentElement("beforebegin", a);
+                buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
+                document.getElementById(e).innerHTML = buildHTML;         
+            }
         }
     }
-
 }
 
 
