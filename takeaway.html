@@ -58,7 +58,7 @@ var htmldata;
 var latestOrder = parseInt(localStorage.getItem("maxOrderNum")); //set init max order num
 var currentClosed = localStorage.getItem("closed") //all closed orders
 localStorage.setItem("closed", currentClosed + ",101"); //init closed order on page load
-var numOfPrevOrders = 15; //number of previous orders to load
+var numOfPrevOrders = 30; //number of previous orders to load
 var loading = 1
 
 getOrders();
@@ -168,8 +168,7 @@ function getLatestOrder(latestOrder, e) {
                 body = document.getElementById(newE - 1);
                 a = document.createElement("div");
                 a.setAttribute("id", e);
-                a.setAttribute("class", "card");
-                a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
+                a.setAttribute("class", 'card text-white bg-success mb-3')
                 a.setAttribute("onclick", 'highlight(this);');
                 body.insertAdjacentElement("beforebegin", a);
                 buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
@@ -197,13 +196,14 @@ function initCreateElements(latestOrder, e) {
         console.log("NEW: "+newOrders);
         if (doesOrderContainTable(htmldata) == false) {
             //if e in closed order list then do nothing, else display:
-            if (closedOrders.includes(e.toString()) == false && newOrders.includes(e.toString()) == true) {
+            if (closedOrders.includes(e.toString()) == false) {
                 body = document.getElementById("result");
                 a = document.createElement("div");
                 a.setAttribute("id", e);
-                a.setAttribute("class", "card")
+                a.setAttribute("class", 'card text-white bg-info mb-3')
                 if (newOrders.includes(e.toString()) == true) {
-                    a.setAttribute("style", 'background-color: green;');
+                    a.setAttribute("class", 'card text-white bg-success mb-3')
+
                 }
                 a.setAttribute("onclick", 'highlight(this);')
                 body.insertAdjacentElement("beforebegin", a);
@@ -216,14 +216,15 @@ function initCreateElements(latestOrder, e) {
 
 
 function highlight(el) {
-    console.log("highlight")
     var element = el;
     id = element.getAttribute("id");
-    if (element.style.backgroundColor == "yellow") { remove(el) };
-    element.style.backgroundColor = "yellow";
+    console.log("highlight"+id)
+    if (element.getAttribute("class") == "card text-white bg-warning mb-3") { remove(el) };
+    element.setAttribute("class", 'card text-white bg-warning mb-3')
 }
 
 function remove(el) {
+    console.log("Rem")
     var element = el;
     id = element.getAttribute("id");
     closeOrderModal(id,element)
