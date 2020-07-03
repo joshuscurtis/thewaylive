@@ -180,14 +180,13 @@ function getLatestOrder(latestOrder, e) {
                 newE = newE - 1;
             }
             body = document.getElementById(newE - 1);
-            a = document.createElement("div");
-            a.setAttribute("id", e);
-            a.setAttribute("class", "card");
-            a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
-            a.setAttribute("onclick", 'highlight(this);');
-            body.insertAdjacentElement("beforebegin", a);
-            buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
-            document.getElementById(e).innerHTML = (buildHTML);
+                a = document.createElement("div");
+                a.setAttribute("id", e);
+                a.setAttribute("class", 'card text-white bg-success mb-3')
+                a.setAttribute("onclick", 'highlight(this);');
+                body.insertAdjacentElement("beforebegin", a);
+                buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
+                document.getElementById(e).innerHTML = (buildHTML);
             html2 = "";
         } else {console.log("Order "+((e%99)+1)+ " is not a table service order")}
         } else { console.log(e + " ERROR: latest order is already closed") }
@@ -214,21 +213,19 @@ function initCreateElements(latestOrder, e) {
         console.log("NEW: "+newOrderTable);
         if (doesOrderContainTable(htmldata) == true) {
             //if e in closed order list then do nothing, else display:
-            if (closedOrders.includes(e.toString()) == false && newOrderTable.includes(e.toString()) == true) {
-                body = document.getElementById("result");
+            if (closedOrders.includes(e.toString()) == false) {
+                    body = document.getElementById("result");
                 a = document.createElement("div");
                 a.setAttribute("id", e);
-                a.setAttribute("class", "card")
-
-                a.setAttribute("onclick", 'highlight(this);')
-                console.log("E"+e)
+                a.setAttribute("class", 'card text-white bg-info mb-3')
+                
                 if (newOrderTable.includes(e.toString()) == true) {
-                    a.setAttribute("style", 'background-color: green;'); //new orders are highlighted green
-                    console.log("GREEN " + e);
+                    a.setAttribute("class", 'card text-white bg-success mb-3')
                 }
+                a.setAttribute("onclick", 'highlight(this);')
                 body.insertAdjacentElement("beforebegin", a);
                 buildHTML = buildOrderHTML(e, htmldata, itemsInOrder);
-                document.getElementById(e).innerHTML = buildHTML;         
+                document.getElementById(e).innerHTML = buildHTML;          
             }
         }
     }
@@ -236,14 +233,15 @@ function initCreateElements(latestOrder, e) {
 
 
 function highlight(el) {
-    console.log("highlight")
     var element = el;
     id = element.getAttribute("id");
-    if (element.style.backgroundColor == "yellow") { remove(el,e) };
-    element.style.backgroundColor = "yellow";
+    console.log("highlight"+id)
+    if (element.getAttribute("class") == "card text-white bg-warning mb-3") { remove(el) };
+    element.setAttribute("class", 'card text-white bg-warning mb-3')
 }
 
 function remove(el) {
+    console.log("Rem")
     var element = el;
     id = element.getAttribute("id");
     closeOrderModal(id,element)
