@@ -214,7 +214,7 @@ function initCreateElements(latestOrder, e) {
         console.log("NEW: "+newOrderTable);
         if (doesOrderContainTable(htmldata) == true) {
             //if e in closed order list then do nothing, else display:
-            if (closedOrders.includes(e.toString()) == false || newOrderTable.includes(e.toString()) == true) {
+            if (closedOrders.includes(e.toString()) == false && newOrderTable.includes(e.toString()) == true) {
                 body = document.getElementById("result");
                 a = document.createElement("div");
                 a.setAttribute("id", e);
