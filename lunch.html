@@ -344,8 +344,8 @@ function doesOrderContainTable(orderData) {
     var tableCheck = null;
     var tableOrder;
     for (var y = 0; y < itemsInOrder; y++) {
-        var orderName = orderData[y].name.substring(0,5)
-        if(orderName == "Table") {
+        var orderName = orderData[y].name.substring(0,6)
+        if(orderName == "Sunday") {
             tableOrder = true;
             tableCheck = orderData[y].name;
             table = orderData[y].name;
