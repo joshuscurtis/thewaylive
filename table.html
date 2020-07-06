@@ -45,9 +45,7 @@ var hasLoaded = 0;
 $.ajax(authSettings).done(function(response) {
     console.log("auth")
     localStorage.setItem("auth", JSON.stringify(response));
-}).fail(function(data){
-            refreshAppModal();
-    });
+});
 //getNewToken
 setInterval(function() {
     $.ajax(authSettings).done(function(response) {
