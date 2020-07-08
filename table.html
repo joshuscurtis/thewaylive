@@ -349,7 +349,6 @@ Swal.fire({
 }).then((result) => {
     if (result.value) {
         window.open('split.html', 'split.html');
-        window.setTimeout(function() { this.close(); }, 1000)
     } else {
         Swal.fire({
             title: 'Select an option',
@@ -363,10 +362,8 @@ Swal.fire({
         }).then((result) => {
             if (result.value) {
                 window.open('takeaway.html', 'takeaway.html');
-                window.setTimeout(function() { this.close(); }, 1000)
             } else {
-                window.open('table.html', 'table.html')
-                window.setTimeout(function() { this.close(); }, 1000)
+                window.open('table.html', 'table.html');
             }
         })
     }
